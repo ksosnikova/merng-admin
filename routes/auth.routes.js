@@ -6,7 +6,10 @@ const { check, validationResult } = require('express-validator');
 const User = require('../models/User');
 const router = Router();
 
-// /api/auth/register
+router.get('/', async(req, res) => {
+  res.json({ hey: 'hi'})
+})
+
 router.post(
   '/register',
   [
@@ -16,6 +19,7 @@ router.post(
   ],
   async (req, res) => {
     try {
+    
       const errors = validationResult(req);
 
       if (!errors.isEmpty()) {
@@ -44,7 +48,6 @@ router.post(
     }
   })
 
-// /api/auth/login
 router.post(
   '/login',
   [

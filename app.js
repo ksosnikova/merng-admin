@@ -4,10 +4,12 @@ const mongoose = require('mongoose');
 
 const app = express();
 
-app.use('/api/auth', require('./routes/auth.routes'));
-//app.get('/', (req, res) => res.json({ foo: 'bar' }));
+app.use(express.json({ extended: true }));
 
-const PORT = config.get('port');
+app.use('/api/auth', require('./routes/auth.routes'));
+
+const PORT = config.get('port') || 8000;
+// const PORT = process.env.PORT || config.get('port') || 5005;
 
 async function start() {
    try {
@@ -24,5 +26,5 @@ async function start() {
 }
 
 start();
-
+//app.listen(PORT, () => console.log(`App has been started on ${PORT}...`))
 //mongoose.connect(config.get('mongoUri'));

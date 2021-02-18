@@ -1,5 +1,5 @@
 {
-  "port": 1337,
+  "port": 8000,
   "jwtSecret": "secret key",
   "mongoUri": "mongodb+srv://kateryna:1234qwer@cluster0.xw1nn.mongodb.net/app?retryWrites=true&w=majority"
 }
