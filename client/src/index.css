@@ -1,5 +1,4 @@
 @import "~materialize-css/dist/css/materialize.min.css";
-
 .btn.deep-orange {
   margin-right: 10px;
 }
@@ -9,15 +8,33 @@ input.orange-input {
   box-shadow: 0 1px 0 0 #fff!important;
 }
 
-input.orange-input + label {
+input.orange-input+label {
   color: #fff!important;
 }
 
-input.orange-input:focus + label {
+input.orange-input:focus+label {
   color: #ffab00!important;
 }
 
 input.orange-input:focus {
   border-bottom: 1px solid #ffab00!important;
   box-shadow: 0 1px 0 0 #ffab00!important;
+}
+
+.nav-wrapper {
+  padding: 0 2rem;
+}
+
+.row.col {
+  padding-top: 2rem;
+}
+
+.loader {
+  display: flex;
+  justify-content: center;
+  padding-top: 3rem;
+}
+
+.profileInnerContainer h4{
+  text-align: center;
 }

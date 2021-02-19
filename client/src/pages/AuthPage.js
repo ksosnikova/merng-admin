@@ -33,7 +33,6 @@ export const AuthPage = () => {
   const loginHandler = async () => {
     try {
       const data = await request('/api/auth/login', 'POST', { ...form });
-      console.log('Data', data)
       auth.login(data.token, data.userId);
     } catch (e) {
       
@@ -55,6 +54,7 @@ export const AuthPage = () => {
               type='text' 
               name='email'
               className='orange-input'
+              value={form.email}
               onChange={changeHandler}
               />
             <label htmlFor="email">Email</label>
@@ -67,6 +67,7 @@ export const AuthPage = () => {
               type='password' 
               name='password'
               className='orange-input'
+              value={form.password}
               onChange={changeHandler}
               disabled={loading}
               />

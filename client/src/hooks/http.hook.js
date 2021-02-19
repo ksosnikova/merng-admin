@@ -19,10 +19,11 @@ export const useHttp = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Something went wrond')
+        throw new Error(data.message || 'Что-то пошло не так')
       }
 
       setLoading(false);
+
       return data;
     } catch (e) {
       setLoading(false);
@@ -34,5 +35,4 @@ export const useHttp = () => {
   const clearError = useCallback(() => setError(null), []);
 
   return { loading, request, error, clearError }
-
 }

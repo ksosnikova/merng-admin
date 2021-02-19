@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { NavLink, useHistory } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
@@ -15,9 +15,9 @@ export const Navbar = () => {
 
   return (
     <nav>
-      <div className="nav-wrapper">
-        <a href="/" class="brand-logo">Профили</a>
-        <ul id="nav-mobile" class="right hide-on-med-and-down">
+      <div className="nav-wrapper teal lighten-3">
+        <span href="/" className="brand-logo">Профили</span>
+        <ul id="nav-mobile" className="right hide-on-med-and-down">
           <li><NavLink to='/create'>Создать</NavLink></li>
           <li><NavLink to='/profiles'>Профили</NavLink></li>
           <li><a onClick={logoutHandler}>Выйти</a></li>
