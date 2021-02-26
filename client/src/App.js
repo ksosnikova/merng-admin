@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRoutes } from './routes';
-import { BrowserRouter as Router } from 'react-router-dom/'
+import { BrowserRouter as Router } from 'react-router-dom/';
 import { useAuth } from './hooks/auth.hook';
 import { AuthContext } from './context/AuthContext';
 import { Navbar } from './components/Navbar';
@@ -9,20 +9,21 @@ import 'materialize-css';
 
 function App() {
 
-  const { token, userId, login, logout, ready } = useAuth();
+  const { token, userId, login, logout, ready, isAdmin } = useAuth();
   const isAuthenticated = !!token;
+  // const userIsAdmin = !!isAdmin;
   const routes = useRoutes(isAuthenticated);
-
+  
   if (!ready) {
     return <Loader />
   }
 
   return (
     <AuthContext.Provider value={{
-      token, userId, login, logout, isAuthenticated
+      token, userId, login, logout, isAuthenticated, isAdmin
     }}>
     <Router>
-      { isAuthenticated && <Navbar />}
+      { isAuthenticated && <Navbar isAdmin={isAdmin} />}
       <div className="container">
         {routes}
       </div>

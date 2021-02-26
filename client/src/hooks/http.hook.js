@@ -1,7 +1,9 @@
 import { useState, useCallback } from 'react';
 
-export const useHttp = () => {
+const storage = 'userData';
 
+export const useHttp = () => {
+  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -15,6 +17,11 @@ export const useHttp = () => {
         headers['Content-Type'] = 'application/json';
       }
 
+      const tokenStorage = JSON.parse(localStorage.getItem(storage));
+      if (tokenStorage && tokenStorage.token) {
+        headers['Authorization'] = `Bearer ${tokenStorage.token}`;
+      }
+        
       const response = await fetch(url, { method, body, headers });
       const data = await response.json();
 
@@ -34,5 +41,5 @@ export const useHttp = () => {
 
   const clearError = useCallback(() => setError(null), []);
 
-  return { loading, request, error, clearError }
+  return { loading, request, error, clearError };
 }

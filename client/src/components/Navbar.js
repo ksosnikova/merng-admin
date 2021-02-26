@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { NavLink, useHistory } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
-export const Navbar = () => {
+export const Navbar = ({ isAdmin }) => {
 
   const auth = useContext(AuthContext);
   const history = useHistory();
@@ -16,7 +16,8 @@ export const Navbar = () => {
   return (
     <nav>
       <div className="nav-wrapper teal lighten-3">
-        <span href="/" className="brand-logo">Профили</span>
+      { isAdmin ? <span className="brand-logo"><NavLink to='/admin'>Админ</NavLink></span> :
+        <span href="/" className="brand-logo">Профили</span> }
         <ul id="nav-mobile" className="right hide-on-med-and-down">
           <li><NavLink to='/create'>Создать</NavLink></li>
           <li><NavLink to='/profiles'>Профили</NavLink></li>

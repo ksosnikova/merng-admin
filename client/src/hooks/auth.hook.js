@@ -7,15 +7,18 @@ export const useAuth = () => {
   const [token, setToken] = useState(null);
   const [ready, setReady] = useState(false);
   const [userId, setUsedId] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(null);
 
-  const login = useCallback((jwtToken, id) => {
+  const login = useCallback((jwtToken, id, isAdmin) => {
     setToken(jwtToken);
     setUsedId(id);
+    setIsAdmin(isAdmin);
 
     localStorage.setItem(storage, JSON.stringify({
       userId: id, 
       token: jwtToken
-    }))
+    }));
+
   }, []);
 
   const logout = useCallback(() => {
@@ -33,5 +36,5 @@ export const useAuth = () => {
     setReady(true);
   }, [login])
 
-  return { login, logout, token, userId, ready };
+  return { login, logout, token, userId, ready, isAdmin };
 }
