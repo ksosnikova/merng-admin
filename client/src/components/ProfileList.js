@@ -4,6 +4,7 @@ import { Modal } from './Modal';
 
 export const ProfileList = ({ profiles, deleteHandler }) => {
 
+
   const [id, setId] = useState(null);
 
   if (!profiles.length) {
@@ -35,7 +36,7 @@ export const ProfileList = ({ profiles, deleteHandler }) => {
               <td>{profile.city}</td>
               <td>{profile.birthday}</td>
               <td>
-                <Link to={`/detail/${profile._id}`}>Открыть</Link>
+                <Link to={`/detail/${profile._id}`}>открыть</Link>
               </td>
               <td>
                 <a><i className="material-icons prefix" onClick={() => setId(profile._id)}>mode_edit</i></a>

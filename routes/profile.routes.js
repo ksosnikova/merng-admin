@@ -42,7 +42,7 @@ router.post(
 
 router.get('/', auth, async (req, res) => {
   try {
-    const profiles = await Profile.find({ owner: req.user.userId }); //owner??
+    const profiles = await Profile.find({ owner: req.user.userId }); 
     res.json(profiles);
   } catch (e) {
     res.status(500).json({ message: 'Что-то пошло не так, попробуйте снова' })
@@ -51,7 +51,7 @@ router.get('/', auth, async (req, res) => {
 
 router.get('/:id', async (req, res) => {
   try {
-    const profile = await Profile.findById(req.params.id); //owner??
+    const profile = await Profile.findById(req.params.id); 
     res.json(profile);
   } catch (e) {
     res.status(500).json({ message: 'Что-то пошло не так, попробуйте снова' })

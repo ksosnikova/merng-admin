@@ -9,8 +9,8 @@ const router = Router();
 router.post(
   '/register',
   [
-    check('email', 'Incorrect email').isEmail(),
-    check('password', 'Minimum password length should be 6 symbols')
+    check('email', 'Некорректный имейл').isEmail(),
+    check('password', 'Минимальный пароль должен состоять из 6 символов')
       .isLength({ min: 6 })
   ],
   async (req, res) => {
@@ -20,7 +20,7 @@ router.post(
       if (!errors.isEmpty()) {
         return res.status(400).json({
           errors: errors.array(),
-          message: 'Incorrect registration data'
+          message: 'Некорректные данные при регистрации'
         })
       }
 
@@ -28,7 +28,7 @@ router.post(
       const candidate = await User.findOne({ email });
 
       if (candidate) {
-        return res.status(400).json({ message: 'User already exists' })
+        return res.status(400).json({ message: 'Пользователь уже существует' })
       }
 
       const hashedPassword = await bcrypt.hash(password, 12);
@@ -36,7 +36,7 @@ router.post(
 
       await user.save();
 
-      res.status(201).json({ message: 'User has been created' });
+      res.status(201).json({ message: 'Пользователь создан' });
 
     } catch (e) {
       res.status(500).json({ message: 'Что-то пошло не так, попробуйте снова' })

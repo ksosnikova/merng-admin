@@ -41,7 +41,7 @@ export const AuthPage = () => {
   return(
     <div className='row'>
       <div className='col s6 offset-s3'>
-        <h1>Админ</h1>
+        <h3>crud</h3>
         <div className="card teal darken-1">
           <div className="card-content white-text">
             <span className="card-title">Авторизация</span>

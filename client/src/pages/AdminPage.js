@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useContext, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Loader } from '../components/Loader';
 import { UserList } from '../components/UserList';
 import { useHttp } from '../hooks/http.hook';
@@ -22,7 +22,14 @@ export const AdminPage = () => {
   const deleteUser = async (id) => {
     try {
       const fetched = await request(`/api/admin/${id}`, 'DELETE', null, {});
-      setUsers(users.filter(user => user._id !== user._id));
+      setUsers(users.filter(user => user._id !== fetched._id));
+    } catch (error) { }
+  };
+
+  const deleteHandler = async (id) => {
+    try {
+      const fetched = await request(`/api/profile/${id}`, 'DELETE', null);
+      setProfiles(profiles.filter(profile => profile._id !== fetched._id));
     } catch (error) { }
   };
 
@@ -54,7 +61,7 @@ export const AdminPage = () => {
       {!loading && <UserList profiles={profiles} users={users} deleteUser={deleteUser} changeUserType={changeUserType} />}
       <h4>Всего профилей: {profiles.length}</h4>
       <p>Профилей старше 18 лет: {adultsProfiles()}</p>
-      {!loading && <ProfileList profiles={profiles} users={users} deleteUser={deleteUser} changeUserType={changeUserType} />}
+      {!loading && <ProfileList profiles={profiles} users={users} deleteHandler={deleteHandler} />}
     </>
   )
 }

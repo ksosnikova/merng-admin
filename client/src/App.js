@@ -11,7 +11,6 @@ function App() {
 
   const { token, userId, login, logout, ready, isAdmin } = useAuth();
   const isAuthenticated = !!token;
-  // const userIsAdmin = !!isAdmin;
   const routes = useRoutes(isAuthenticated);
   
   if (!ready) {

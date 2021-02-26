@@ -42,8 +42,7 @@ export const Form = ({ profile, isEdit }) => {
   const createProfile = async () => {
     try {
       const data = await request('/api/profile/generate', 'POST',
-        { ...form, birthday: birthDate.current.value },
-        { Authorization: `Bearer ${auth.token}` });
+        { ...form, birthday: birthDate.current.value }, {});
       history.push(`detail/${data.profile._id}`);
     } catch (error) {
     }
@@ -52,9 +51,7 @@ export const Form = ({ profile, isEdit }) => {
   const updateHandler = async profileId => {
     try {
       const fetched = await request(`/api/profile/${profileId}`, 'PUT', 
-      { ...form, birthday: birthDate.current.value }, {
-        Authorization: `Bearer ${auth.token}`
-      });
+      { ...form, birthday: birthDate.current.value }, {});
       history.push(`detail/${profileId}`);
     } catch (error) {}
   };
