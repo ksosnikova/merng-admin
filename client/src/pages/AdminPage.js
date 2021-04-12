@@ -1,67 +1,86 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { Loader } from '../components/Loader';
-import { UserList } from '../components/UserList';
-import { useHttp } from '../hooks/http.hook';
-import { getAge } from '../utils/getAge';
-import { ProfileList } from '../components/ProfileList';
+import React from "react";
+import { Loader } from "../components/Loader";
+import { UserList } from "../components/UserList";
+import { getAge } from "../utils/getAge";
+import { ProfileList } from "../components/ProfileList";
+import { DELETE_USER, GET_ALL_DATA, UPDATE_USER, DELETE_PROFILE } from "../graphql/queries";
+import { useQuery, useMutation } from "@apollo/client";
 
 export const AdminPage = () => {
+  const { loading, error, data } = useQuery(GET_ALL_DATA);
 
-  const [users, setUsers] = useState([]);
-  const [profiles, setProfiles] = useState([]);
-  const { loading, request } = useHttp();
+  const [
+    deleteUser,
+    { error: errorDeletion, loading: loadingDeletion },
+  ] = useMutation(DELETE_USER);
 
-  const changeUserType = async (id) => {
-    try {
-      const fetched = await request(`/api/admin/${id}`, 'PATCH', null, {});
-      let newUserList = users.filter(user => user._id !== fetched._id);
-      setUsers([...newUserList, fetched]);
-    } catch (error) { }
+  const [
+    updateUser,
+    { error: errorChange, loading: loadingChange },
+  ] = useMutation(UPDATE_USER);
+
+  const [
+    deleteProfile,
+    { loading: deleteLoading, error: deleteError },
+  ] = useMutation(DELETE_PROFILE);
+
+  const deleteUserHandler = async (userId) => {
+    const data = await deleteUser({
+      variables: { userId },
+      refetchQueries: [{ query: GET_ALL_DATA }],
+    });
   };
 
-  const deleteUser = async (id) => {
-    try {
-      const fetched = await request(`/api/admin/${id}`, 'DELETE', null, {});
-      setUsers(users.filter(user => user._id !== fetched._id));
-    } catch (error) { }
+  const changeUserType = async (userId) => {
+    const data = await updateUser({
+      variables: { userId },
+      refetchQueries: [{ query: GET_ALL_DATA }],
+    });
   };
 
-  const deleteHandler = async (id) => {
+  const deleteProfileHandler = async (id) => {
     try {
-      const fetched = await request(`/api/profile/${id}`, 'DELETE', null);
-      setProfiles(profiles.filter(profile => profile._id !== fetched._id));
-    } catch (error) { }
+      const data = await deleteProfile({
+        variables: { profileId: id },
+        refetchQueries: [{ query: GET_ALL_DATA }],
+      });
+    } catch (error) {}
   };
-
-  const getAllUsers = useCallback(async () => {
-    try {
-      const { usersDB, profilesDB } = await request(`/api/admin/`, 'GET', null);
-      setUsers(usersDB);
-      setProfiles(profilesDB);
-    } catch (error) { }
-  }, [request]);
 
   const adultsProfiles = () => {
     let countAdults = 0;
-    profiles.forEach(profile => {
-      if (getAge(profile.birthday) >= 18) { countAdults++ }
+    data.getAdminData.profiles.forEach((profile) => {
+      if (getAge(profile.birthday) >= 18) {
+        countAdults++;
+      }
     });
     return countAdults;
+  };
+
+  if (loading) {
+    return <Loader />;
   }
-
-  useEffect(() => {
-    getAllUsers()
-  }, [getAllUsers]);
-
-  if (loading) { return <Loader /> }
 
   return (
     <>
-      <h4>Всего пользователей: {users.length}</h4>
-      {!loading && <UserList profiles={profiles} users={users} deleteUser={deleteUser} changeUserType={changeUserType} />}
-      <h4>Всего профилей: {profiles.length}</h4>
+      <h4>Всего пользователей: {data.getAdminData.users.length}</h4>
+      {!loading && (
+        <UserList
+          profiles={data.getAdminData.profiles}
+          users={data.getAdminData.users}
+          deleteUserHandler={deleteUserHandler}
+          changeUserType={changeUserType}
+        />
+      )}
+      <h4>Всего профилей: {data.getAdminData.profiles.length}</h4>
       <p>Профилей старше 18 лет: {adultsProfiles()}</p>
-      {!loading && <ProfileList profiles={profiles} users={users} deleteHandler={deleteHandler} />}
+      {!loading && (
+        <ProfileList
+          profiles={data.getAdminData.profiles}
+          users={data.getAdminData.users}
+          deleteHandler={deleteProfileHandler}
+        />
+      )}
     </>
-  )
-}
+  );
+};

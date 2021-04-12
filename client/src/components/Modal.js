@@ -9,6 +9,7 @@ export const Modal = ({ profile, onClick }) => {
         <i className='material-icons edit-icon' onClick={onClick}>close</i>
         <Form
           profile={profile}
+          onClick={onClick}
           isEdit={true}
         />
       </div>

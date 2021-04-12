@@ -35,7 +35,7 @@ input.orange-input:focus {
   padding-top: 3rem;
 }
 
-.formProfileContainer h4{
+.formProfileContainer h4 {
   text-align: center;
 }
 
@@ -44,7 +44,7 @@ td, th {
 }
 
 td a i {
-  cursor: pointer; 
+  cursor: pointer;
 }
 
 .search-iput-field {
@@ -61,7 +61,7 @@ td a i {
   position: fixed;
   left: 0;
   top: 0;
-  background-color: rgba(0,0,0,.2);
+  background-color: rgba(0, 0, 0, .2);
   width: 100%;
   height: 100%;
   overflow: auto;
@@ -80,4 +80,8 @@ td a i {
   position: absolute;
   top: 10px;
   right: 10px;
+}
+
+.browser-default {
+  color: inherit;
 }

@@ -1,36 +1,41 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { Loader } from '../components/Loader';
-import { ProfileList } from '../components/ProfileList';
-import { useHttp } from '../hooks/http.hook';
+import { useLazyQuery, useQuery } from "@apollo/react-hooks";
+import React from "react";
+import { Loader } from "../components/Loader";
+import { ProfileList } from "../components/ProfileList";
+import { GET_PROFILES, DELETE_PROFILE } from "../graphql/queries";
+import { useMutation } from "@apollo/client";
 
 export const ProfilesPage = () => {
 
-  const [profiles, setProfiles] = useState([]);
-  const { loading, request } = useHttp();
+  const { loading, error, data } = useQuery(GET_PROFILES);
+
+  const [
+    deleteProfile,
+    { loading: deleteLoading, error: deleteError },
+  ] = useMutation(DELETE_PROFILE);
 
   const deleteHandler = async (id) => {
     try {
-      const fetched = await request(`/api/profile/${id}`, 'DELETE', null);
-      setProfiles(profiles.filter(profile => profile._id !== fetched._id));
-    } catch (error) { }
+      const data = await deleteProfile({
+        variables: { profileId: id },
+        refetchQueries: [{ query: GET_PROFILES }],
+      });
+    } catch (error) {}
   };
 
-  const fetchProfiles = useCallback(async () => {
-    try {
-      const allProfiles = await request('/api/profile', 'GET', null);
-      setProfiles(allProfiles);
-    } catch (error) {}
-  }, [request]);
-
-  useEffect(() => {
-    fetchProfiles()
-  }, [fetchProfiles]);
-
-  if (loading) { return <Loader /> }
+  if (loading) {
+    return <Loader />;
+  }
+  if (error) return `Error! ${error}`;
 
   return (
     <>
-      {!loading && <ProfileList profiles={profiles} deleteHandler={deleteHandler} />}
+      {!loading && (
+        <ProfileList
+          profiles={data?.getProfiles}
+          deleteHandler={deleteHandler}
+        />
+      )}
     </>
-  )
-}
+  );
+};

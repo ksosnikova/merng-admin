@@ -1,14 +1,13 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Modal } from './Modal';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { Modal } from "./Modal";
 
 export const ProfileList = ({ profiles, deleteHandler }) => {
-
 
   const [id, setId] = useState(null);
 
   if (!profiles.length) {
-    return <p className='center'>Профилей нет</p>
+    return <p className="center">Профилей нет</p>;
   }
 
   return (
@@ -36,19 +35,41 @@ export const ProfileList = ({ profiles, deleteHandler }) => {
               <td>{profile.city}</td>
               <td>{profile.birthday}</td>
               <td>
-                <Link to={`/detail/${profile._id}`}>открыть</Link>
+                <Link to={`/detail/${profile.id}`}>открыть</Link>
               </td>
               <td>
-                <a><i className="material-icons prefix" onClick={() => setId(profile._id)}>mode_edit</i></a>
-                {id === profile._id && <Modal profile={profile} closeModal={() => setId(null)} onClick={() => { setId(null) }} />}
+                <a>
+                  <i
+                    className="material-icons prefix"
+                    onClick={() => setId(profile.id)}
+                  >
+                    mode_edit
+                  </i>
+                </a>
+                {id === profile.id && (
+                  <Modal
+                    profile={profile}
+                    closeModal={() => setId(null)}
+                    onClick={() => {
+                      setId(null);
+                    }}
+                  />
+                )}
               </td>
               <td>
-                <a><i className="material-icons prefix" onClick={() => deleteHandler(profile._id)}>delete_forever</i></a>
+                <a>
+                  <i
+                    className="material-icons prefix"
+                    onClick={() => deleteHandler(profile.id)}
+                  >
+                    delete_forever
+                  </i>
+                </a>
               </td>
             </tr>
-          )
+          );
         })}
       </tbody>
     </table>
-  )
-}
+  );
+};

@@ -1,16 +1,20 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { NavLink, useHistory } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
+import { AUTH_TOKEN } from '../constatns';
+import { isLoggedIn } from '../cache';
+import { useApolloClient } from "@apollo/client";
 
 export const Navbar = ({ isAdmin }) => {
 
-  const auth = useContext(AuthContext);
   const history = useHistory();
+  const client = useApolloClient();
 
   const logoutHandler = event => {
     event.preventDefault();
-    auth.logout();
-    history.push('/')
+    localStorage.removeItem(AUTH_TOKEN);
+    isLoggedIn(false);
+    client.cache.reset();
+    //  history.push('/')
   }
 
   return (

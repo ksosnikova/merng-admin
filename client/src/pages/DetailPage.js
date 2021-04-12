@@ -1,34 +1,23 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
-import { Loader } from '../components/Loader';
-import { ProfileCard } from '../components/ProfileCard';
-import { useHttp } from '../hooks/http.hook';
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { Loader } from "../components/Loader";
+import { ProfileCard } from "../components/ProfileCard";
+import { useQuery } from "@apollo/client";
+import { GET_PROFILE } from "../graphql/queries";
 
 export const DetailPage = () => {
 
-  const { request, loading } = useHttp();
-  const [profile, setProfile] = useState(null);
   const profileId = useParams().id;
 
-  const getProfile = useCallback(async () => {
-    try {
-      const fetched = await request(`/api/profile/${profileId}`, 'GET', null)
-      setProfile(fetched);
-    } catch (error) {
-    }
-  }, [profileId, request]);
-
-  useEffect(() => {
-    getProfile();
-  }, [getProfile]);
-
+  const { loading, error, data } = useQuery(GET_PROFILE, {
+    variables: { profileId },
+  });
+  
   if (loading) {
-    return <Loader />
+    return <Loader />;
   }
 
   return (
-    <>
-      { !loading && profile && <ProfileCard profile={profile} />}
-    </>
-  )
-}
+    <>{!loading && data && <ProfileCard profile={data.getProfile} />}</>
+  );
+};

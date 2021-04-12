@@ -1,33 +1,31 @@
-import React from 'react';
-import { useRoutes } from './routes';
-import { BrowserRouter as Router } from 'react-router-dom/';
-import { useAuth } from './hooks/auth.hook';
-import { AuthContext } from './context/AuthContext';
-import { Navbar } from './components/Navbar';
-import { Loader } from './components/Loader';
-import 'materialize-css';
+import React from "react";
+import { useRoutes } from "./routes";
+import { BrowserRouter as Router } from "react-router-dom/";
+import { Navbar } from "./components/Navbar";
+import { Loader } from "./components/Loader";
+import { useQuery, gql } from "@apollo/client";
+import "materialize-css";
+
+export const IS_AUTH = gql`
+  query isLoggedIn {
+    isLoggedIn @client
+    isAdmin @client
+  }
+`;
 
 function App() {
 
-  const { token, userId, login, logout, ready, isAdmin } = useAuth();
-  const isAuthenticated = !!token;
-  const routes = useRoutes(isAuthenticated);
-  
-  if (!ready) {
-    return <Loader />
-  }
+  const { loading, error, data } = useQuery(IS_AUTH);
+  const routes = useRoutes(data.isLoggedIn);
+
+  if (error) return `Error occured: ${error}`;
+  if (loading) return <Loader />;
 
   return (
-    <AuthContext.Provider value={{
-      token, userId, login, logout, isAuthenticated, isAdmin
-    }}>
-    <Router>
-      { isAuthenticated && <Navbar isAdmin={isAdmin} />}
-      <div className="container">
-        {routes}
-      </div>
-    </Router>
-    </AuthContext.Provider>
+      <Router>
+        {data.isLoggedIn && <Navbar isAdmin={data.isAdmin} />}
+        <div className="container">{routes}</div>
+      </Router>
   );
 }
 

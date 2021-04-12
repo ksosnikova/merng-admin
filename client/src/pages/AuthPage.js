@@ -1,95 +1,146 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { AuthContext } from '../context/AuthContext';
-import { useHttp } from '../hooks/http.hook';
-import { useMessage } from '../hooks/message.hook';
+import React, { useEffect } from "react";
+import { useFormik } from "formik";
+import { useMessage } from "../hooks/message.hook";
+import { gql, useMutation } from "@apollo/client";
+import { isLoggedIn, isAdminVar } from "../cache";
+import { AUTH_TOKEN } from "../constatns";
+import * as Yup from "yup";
+import { useApolloClient } from "@apollo/react-hooks";
+
+const LOGIN = gql`
+  mutation Login($email: String!, $password: String!) {
+    login(password: $password, email: $email) {
+      id
+      email
+      token
+      isAdmin
+    }
+  }
+`;
+
+const REGISTRATION = gql`
+  mutation Registration($email: String!, $password: String!) {
+    registration(password: $password, email: $email) {
+      id
+      email
+      token
+      isAdmin
+    }
+  }
+`;
 
 export const AuthPage = () => {
+  const client = useApolloClient();
 
-  const auth = useContext(AuthContext);
+  const [login, { loading: loginLoading, error: loginError }] = useMutation(
+    LOGIN
+  );
+
+  const [registration, { loading, error }] = useMutation(REGISTRATION);
+
   const message = useMessage();
-  const { loading, error, request, clearError } = useHttp();
-  const [form, setForm] = useState({
-    email: '',
-    password: ''
-  });
 
   useEffect(() => {
-    message(error);
-    clearError();
-  } , [error, message, clearError])
+    message(error || loginError);
+  }, [error, loginError, message]);
 
-  const changeHandler = event => {
-    setForm({ ...form, [event.target.name]: event.target.value })
-  }
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+      isRegistration: false,
+    },
+    validationSchema: Yup.object().shape({
+      email: Yup.string()
+        .min(5, "Too Short!")
+        .max(250, "Too Long!")
+        .email("Email is not valid")
+        .required("Required"),
+      password: Yup.string()
+        .min(3, "Too Short!")
+        .max(30, "Too Long!")
+        .required("Required"),
+    }),
+    onSubmit: async (values) => {
+      if (values.isRegistration) {
+        try {
+          const { data } = await registration({
+            variables: { email: values.email, password: values.password },
+          });
+          localStorage.setItem(AUTH_TOKEN, data.token);
+          isLoggedIn(true);
+          isAdminVar(data.isAdmin);
+        } catch (err) {
+          console.log(err);
+        }
+      } else {
+        try {
+          const { data } = await login({
+            variables: { email: values.email, password: values.password },
+          });
+          localStorage.setItem(AUTH_TOKEN, data.login.token);
+          isLoggedIn(true);
+          isAdminVar(data.login.isAdmin);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    },
+  });
 
-  const registerHandler = async () => {
-    try {
-      const data = await request('/api/auth/register', 'POST', { ...form });
-      message(data.message);
-    } catch (e) {
-    }
-  }
-
-  const loginHandler = async () => {
-    try {
-      const data = await request('/api/auth/login', 'POST', { ...form });
-      auth.login(data.token, data.userId, data.isAdmin);
-    } catch (e) {
-    }
-  }
-
-  return(
-    <div className='row'>
-      <div className='col s6 offset-s3'>
+  return (
+    <div className="row">
+      <div className="col s6 offset-s3">
         <h3>crud</h3>
         <div className="card teal darken-1">
           <div className="card-content white-text">
-            <span className="card-title">Авторизация</span>
-
-            <div className="input-field">
-            <input 
-              //placeholder="Enter email" 
-              id='email' 
-              type='text' 
-              name='email'
-              className='orange-input'
-              value={form.email}
-              onChange={changeHandler}
+            <span className="card-title">Authorization</span>
+            <form onSubmit={formik.handleSubmit}>
+              <input
+                className="orange-input"
+                name="email"
+                placeholder="email"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.email}
               />
-            <label htmlFor="email">Email</label>
-          </div>
-
-          <div className="input-field">
-            <input 
-              //placeholder="Enter password" 
-              id='password' 
-              type='password' 
-              name='password'
-              className='orange-input'
-              value={form.password}
-              onChange={changeHandler}
-              disabled={loading}
+              {formik.touched.email && formik.errors.email ? (
+                <div>{formik.errors.email}</div>
+              ) : null}
+              <input
+                className="orange-input"
+                type="password"
+                name="password"
+                placeholder="password"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.password}
+                autoComplete="current password"
               />
-            <label htmlFor="password">Password</label>
-          </div>
+              {formik.touched.password && formik.errors.password ? (
+                <div>{formik.errors.password}</div>
+              ) : null}
 
-           <div>
-           </div>
-          </div>
-          <div className="card-action">
-           <button  
-            className='btn deep-orange darken-1'
-            onClick={loginHandler}
-            disabled={loading}
-            >Войти</button>
-           <button 
-            className='btn grey lighten-2 black-text'
-            onClick={registerHandler}
-            disabled={loading}
-            >Регистрация</button>
+              <button
+                className="btn deep-orange darken-1"
+                type="submit"
+                disabled={loading && loginLoading}
+              >
+                Login
+              </button>
+
+              <button
+                className="btn grey lighten-2 black-text"
+                type="registration"
+                disabled={loading && loginLoading}
+                onClick={(e) => formik.setFieldValue("isRegistration", true)}
+              >
+                Registration
+              </button>
+            </form>
           </div>
         </div>
       </div>
-    </div> 
-  )
-}
+    </div>
+  );
+};
